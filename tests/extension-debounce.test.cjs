@@ -4,7 +4,8 @@ const Module = require('node:module');
 const originalLoad = Module._load;
 const events = {};
 let calls = 0;
-const diagnosticCollection = { set() {}, delete() {}, dispose() {} };
+let deletes = 0;
+const diagnosticCollection = { set() {}, delete() { deletes++; }, dispose() {} };
 const vscode = {
   languages: { createDiagnosticCollection: () => diagnosticCollection },
   commands: { registerCommand: () => ({ dispose() {} }) },
@@ -34,6 +35,7 @@ test('a burst of editor changes triggers one validation; closing cancels pending
   assert.equal(calls, 1);
   events.change({ document });
   events.close(document);
+  assert.equal(deletes, 0, 'closing preserves existing diagnostics');
   await wait(400);
   assert.equal(calls, 1);
 });

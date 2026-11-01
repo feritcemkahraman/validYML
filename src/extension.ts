@@ -25,7 +25,6 @@ export function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(debounce);
         context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(document => {
             debounce.cancel(document.uri.toString());
-            diagnosticCollection.delete(document.uri);
         }));
         context.subscriptions.push(
             vscode.workspace.onDidChangeTextDocument(event => {
